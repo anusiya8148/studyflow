@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - System Registration Node</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-wrapper">
+
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="toast-alert toast-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>Create Profile</h2>
+            <p>Join StudyFlow and configure your telemetry desk.</p>
+        </div>
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label>Full Personal Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Alex Chen" required>
+            </div>
+            <div class="form-group">
+                <label>Email Point Location</label>
+                <input type="email" name="email" class="form-control" placeholder="alex@domain.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password Core Key</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div class="form-group">
+                <label>Verify Security Password Key</label>
+                <input type="password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Provision Account Layer</button>
+        </form>
+        <p style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+            Have an account? <a href="{{ url_for('login') }}" style="color: var(--primary-purple); text-decoration: none; font-weight: 600;">Log in here</a>
+        </p>
+    </div>
+
+</body>
+</html>

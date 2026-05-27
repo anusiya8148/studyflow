@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="margin-bottom:32px;">
+    <h1 style="font-size:26px; font-weight:700;">Voice Notes</h1>
+    <p style="color:var(--text-muted); font-size:14px;">Capture, process, and re-verify speech recordings natively in the browser container.</p>
+</div>
+
+<div class="audio-recorder-panel" style="background-color: var(--card-bg);">
+    <h3 style="font-weight:600;">Voice Processing Studio Module</h3>
+    <p id="recordingStatusText" style="color: var(--text-muted); font-size:14px; margin-top:6px;">Hardware system operational interface pipeline standing by.</p>
+    <button class="record-pulse-btn" id="audioRecordBtn" onclick="toggleVoiceRecordingState()"><i class="fas fa-microphone"></i></button>
+    <p style="font-size:12px; color:var(--text-muted);">Press button element node directly to switch system recording states natively.</p>
+</div>
+
+<h2 style="font-size:18px; font-weight:600; margin-bottom:20px;">Saved Dictation Logs Repository</h2>
+<div class="cards-grid-auto">
+    {% for vn in voice_notes %}
+    <div class="interactive-card" style="padding:20px;">
+        <div>
+            <h4 style="font-weight:600; margin-bottom:12px; font-size:16px;"><i class="fas fa-waveform" style="color:var(--primary-purple); margin-right:6px;"></i> {{ vn.title }}</h4>
+            <audio controls style="width:100%; margin-top:8px;">
+                <source src="{{ url_for('static', filename='uploads/' + vn.filename) }}" type="audio/webm">
+                Fallback stream audio rendering unsupported by target client environment framework.
+            </audio>
+        </div>
+        <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--text-muted);">Recorded: {{ vn.created_at }}</span>
+            <a href="{{ url_for('delete_voice', id=vn.id) }}" style="color:#ef4444; font-size:14px;" onclick="return confirm('Erase selected voice artifact node instance?')"><i class="fas fa-trash-alt"></i></a>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted); background: var(--card-bg); border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+        No saved voice recordings detected. Try starting a live recording above.
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

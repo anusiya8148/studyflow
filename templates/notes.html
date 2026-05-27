@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card-header-inline" style="margin-bottom: 32px;">
+    <div>
+        <h1 style="font-size: 26px; font-weight: 700;">Text Notes Repository</h1>
+        <p style="color: var(--text-muted); font-size:14px;">Store thoughts, reference concepts, and knowledge assets.</p>
+    </div>
+    <button class="btn-primary" onclick="definerModalContext.open('noteCreationModal')"><i class="fas fa-plus"></i> Compile Note Artifact</button>
+</div>
+
+<div class="cards-grid-auto">
+    {% for note in notes %}
+    <div class="interactive-card">
+        <div>
+            <h3 style="font-weight:600; font-size:18px; margin-bottom:10px;">{{ note.title }}</h3>
+            <p style="font-size:14px; color:var(--text-dark); white-space: pre-line; line-height:1.5;">{{ note.content }}</p>
+        </div>
+        <div>
+            <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:16px;"><i class="far fa-clock"></i> {{ note.created_at }}</span>
+            <div class="card-actions-wrapper">
+                <button class="card-action-btn btn-edit" onclick="openEditNoteModal('{{ note.id }}', '{{ note.title|e }}', '{{ note.content|e }}')"><i class="fas fa-pencil-alt"></i></button>
+                <a href="{{ url_for('delete_note', id=note.id) }}" class="card-action-btn btn-delete" onclick="return confirm('Purge selected record entry?')"><i class="fas fa-trash-alt"></i></a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-muted);">
+        <i class="far fa-folder-open" style="font-size: 48px; margin-bottom: 16px;"></i>
+        <p>No storage components written. Click upper boundary control to assign record blocks.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="modal-overlay" id="noteCreationModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('noteCreationModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Compose New Note Entry</h3>
+        <form action="{{ url_for('notes') }}" method="POST">
+            <div class="form-group">
+                <label>Header Title</label>
+                <input type="text" name="title" class="form-control" placeholder="Lecture 3 core principles..." required>
+            </div>
+            <div class="form-group">
+                <label>Detailed Markdown Body</label>
+                <textarea name="content" rows="6" placeholder="Document textual concepts here..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Commit Entry</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="noteModificationModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('noteModificationModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Modify Note Specifications</h3>
+        <form id="editNoteForm" method="POST">
+            <div class="form-group">
+                <label>Header Title</label>
+                <input type="text" name="title" id="editNoteTitle" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Detailed Markdown Body</label>
+                <textarea name="content" id="editNoteContent" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Commit Update Block</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditNoteModal(id, title, content) {
+        document.getElementById('editNoteForm').action = "/notes/edit/" + id;
+        document.getElementById('editNoteTitle').value = title;
+        document.getElementById('editNoteContent').value = content;
+        definerModalContext.open('noteModificationModal');
+    }
+</script>
+
+{% endblock %}

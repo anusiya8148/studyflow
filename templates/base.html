@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Master Productivity</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="toast-alert toast-{{ category }}"><i class="fas fa-info-circle"></i> {{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <aside class="sidebar" id="applicationSidebar">
+        <div class="sidebar-branding">
+            <i class="fas fa-graduation-cap"></i> StudyFlow
+        </div>
+        <ul class="sidebar-navigation">
+            <li class="{% if request.path == '/dashboard' %}active{% endif %}"><a href="{{ url_for('dashboard') }}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li class="{% if request.path == '/notes' %}active{% endif %}"><a href="{{ url_for('notes') }}"><i class="fas fa-sticky-note"></i> Notes</a></li>
+            <li class="{% if request.path == '/tasks' %}active{% endif %}"><a href="{{ url_for('tasks') }}"><i class="fas fa-tasks"></i> Tasks</a></li>
+            <li class="{% if request.path == '/journal' %}active{% endif %}"><a href="{{ url_for('journal') }}"><i class="fas fa-book"></i> Journal</a></li>
+            <li class="{% if request.path == '/voice' %}active{% endif %}"><a href="{{ url_for('voice') }}"><i class="fas fa-microphone"></i> Voice Notes</a></li>
+            <li class="{% if request.path == '/motivation' %}active{% endif %}"><a href="{{ url_for('motivation') }}"><i class="fas fa-bolt"></i> Motivation</a></li>
+            <li class="{% if request.path == '/logout' %}active{% endif %}"><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <div class="app-canvas">
+        <nav class="navbar-top">
+            <button class="mobile-toggle" id="mobileMenuTrigger"><i class="fas fa-bars"></i></button>
+            <form action="{{ url_for('notes') }}" method="GET" class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" placeholder="Search application assets..." value="{{ search or '' }}">
+            </form>
+            <div style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
+                <i class="fas fa-user-circle" style="font-size: 24px; color: var(--primary-purple);"></i>
+                <span>{{ session.get('user_name', 'Guest Profile') }}</span>
+            </div>
+        </nav>
+
+        <main class="view-container">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

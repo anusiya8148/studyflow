@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card-header-inline" style="margin-bottom:32px;">
+    <div>
+        <h1 style="font-size: 26px; font-weight: 700;">Task Matrix Engine</h1>
+        <p style="color: var(--text-muted); font-size:14px;">Assign, map out priority rankings, and coordinate active milestones.</p>
+    </div>
+    <button class="btn-primary" onclick="definerModalContext.open('taskAllocationModal')"><i class="fas fa-plus"></i> Add Objective Node</button>
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Status Flag</th>
+                    <th>Objective Metric Item Descriptor</th>
+                    <th>Priority Assignment</th>
+                    <th>Target Date Line</th>
+                    <th style="text-align:right;">Operations Handling</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tasks %}
+                <tr>
+                    <td>
+                        {% if t.status == 'Completed' %}
+                        <a href="{{ url_for('change_task_status', id=t.id, status='pending') }}" style="color:#22c55e; font-size:18px;"><i class="fas fa-check-square"></i></a>
+                        {% else %}
+                        <a href="{{ url_for('change_task_status', id=t.id, status='complete') }}" style="color:var(--border-color); font-size:18px;"><i class="far fa-square"></i></a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if t.status == 'Completed' %}<del style="color:var(--text-muted);">{{ t.title }}</del>{% else %}{{ t.title }}{% endif %}
+                    </td>
+                    <td><span class="badge badge-{{ t.priority.lower() }}">{{ t.priority }}</span></td>
+                    <td><i class="far fa-calendar-alt" style="color:var(--text-muted); margin-right:4px;"></i> {{ t.due_date }}</td>
+                    <td style="text-align:right; font-size:16px;">
+                        <button class="card-action-btn btn-edit" onclick="openEditTaskModal('{{ t.id }}', '{{ t.title|e }}', '{{ t.due_date }}', '{{ t.priority }}')"><i class="fas fa-edit"></i></button>
+                        <a href="{{ url_for('delete_task', id=t.id) }}" class="card-action-btn btn-delete" onclick="return confirm('Purge task object instance node?')"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-muted);">Zero active milestones registered in local workspace architecture.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay" id="taskAllocationModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('taskAllocationModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Allocate New Task Assignment</h3>
+        <form action="{{ url_for('tasks') }}" method="POST">
+            <div class="form-group">
+                <label>Task Directive Text</label>
+                <input type="text" name="title" class="form-control" placeholder="Complete advanced calculus problem sets..." required>
+            </div>
+            <div class="form-group">
+                <label>Target Execution Deadline</label>
+                <input type="date" name="due_date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Priority Processing Tier Weight</label>
+                <select name="priority">
+                    <option value="High">High Severity Tier</option>
+                    <option value="Medium" selected>Medium Balancing State</option>
+                    <option value="Low">Low Overhead Block</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Inject Operational Flow</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="taskUpdateModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('taskUpdateModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Edit Task Settings</h3>
+        <form id="editTaskForm" method="POST">
+            <div class="form-group">
+                <label>Task Directive Text</label>
+                <input type="text" name="title" id="editTaskTitle" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Target Execution Deadline</label>
+                <input type="date" name="due_date" id="editTaskDueDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Priority Tier Weight</label>
+                <select name="priority" id="editTaskPriority">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Apply Structural Metadata Fixes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditTaskModal(id, title, date, priority) {
+        document.getElementById('editTaskForm').action = "/tasks/edit/" + id;
+        document.getElementById('editTaskTitle').value = title;
+        document.getElementById('editTaskDueDate').value = date;
+        document.getElementById('editTaskPriority').value = priority;
+        definerModalContext.open('taskUpdateModal');
+    }
+</script>
+
+{% endblock %}

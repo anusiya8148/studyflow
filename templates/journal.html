@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card-header-inline" style="margin-bottom:32px;">
+    <div>
+        <h1 style="font-size:26px; font-weight:700;">Daily Journal Logs</h1>
+        <p style="color:var(--text-muted); font-size:14px;">Capture mental state progress and note blockages.</p>
+    </div>
+    <button class="btn-primary" onclick="definerModalContext.open('journalWritingModal')"><i class="fas fa-pen-nib"></i> Formulate Reflection Log</button>
+</div>
+
+<div class="cards-grid-auto">
+    {% for j in journals %}
+    <div class="interactive-card">
+        <div>
+            <div style="display:flex; justify-content:between; align-items:center; margin-bottom:12px;">
+                <h3 style="font-weight:600; font-size:18px;">{{ j.title }}</h3>
+                <span style="font-size:22px;">{{ j.mood }}</span>
+            </div>
+            <p style="font-size:14px; color:var(--text-dark); white-space:pre-line; line-height:1.6;">{{ j.content }}</p>
+        </div>
+        <div>
+            <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:16px;"><i class="fas fa-calendar-day"></i> Timestamped: {{ j.created_at }}</span>
+            <div class="card-actions-wrapper">
+                <button class="card-action-btn btn-edit" onclick="openEditJournalModal('{{ j.id }}', '{{ j.title|e }}', '{{ j.content|e }}', '{{ j.mood }}')"><i class="fas fa-pencil-alt"></i></button>
+                <a href="{{ url_for('delete_journal', id=j.id) }}" class="card-action-btn btn-delete" onclick="return confirm('Purge selected reflection entry?')"><i class="fas fa-trash-alt"></i></a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align:center; padding:60px; color:var(--text-muted);">
+        <i class="fas fa-book-open" style="font-size:48px; margin-bottom:16px;"></i>
+        <p>No logged reflection blocks detected. Initialize an entry to begin historical mental state mapping tracking.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="modal-overlay" id="journalWritingModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('journalWritingModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Draft Reflective Journal Entry</h3>
+        <form action="{{ url_for('journal') }}" method="POST">
+            <div class="form-group">
+                <label>Log Identifier Title</label>
+                <input type="text" name="title" class="form-control" placeholder="Midweek state overview reflection..." required>
+            </div>
+            <div class="form-group">
+                <label>Current Mood Vector Setting</label>
+                <select name="mood" class="form-control">
+                    <option value="😊">😊 Energized / Productive State</option>
+                    <option value="😐">😐 Neutral / Processing State</option>
+                    <option value="📚">📚 Intense Focus Framework</option>
+                    <option value="😫">😫 Fatigued / Processing Obstacle</option>
+                    <option value="🚀">🚀 Elite Breakthrough Milestone</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Context Area Body Content Documentation</label>
+                <textarea name="content" rows="6" placeholder="Transcribe unfiltered internal log streams..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Lock Logging Block</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="journalModificationModal">
+    <div class="modal-surface">
+        <button class="modal-close-trigger" onclick="definerModalContext.close('journalModificationModal')">&times;</button>
+        <h3 style="margin-bottom:20px; font-weight:600;">Update Historical Log Matrix</h3>
+        <form id="editJournalForm" method="POST">
+            <div class="form-group">
+                <label>Log Identifier Title</label>
+                <input type="text" name="title" id="editJournalTitle" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Current Mood Vector Setting</label>
+                <select name="mood" id="editJournalMood" class="form-control">
+                    <option value="😊">😊 😊</option>
+                    <option value="😐">😐 😐</option>
+                    <option value="📚">📚 📚</option>
+                    <option value="😫">😫 😫</option>
+                    <option value="🚀">🚀 🚀</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Context Area Body Content Documentation</label>
+                <textarea name="content" id="editJournalContent" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Commit Transformation Logs</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditJournalModal(id, title, content, mood) {
+        document.getElementById('editJournalForm').action = "/journal/edit/" + id;
+        document.getElementById('editJournalTitle').value = title;
+        document.getElementById('editJournalContent').value = content;
+        document.getElementById('editJournalMood').value = mood;
+        definerModalContext.open('journalModificationModal');
+    }
+</script>
+
+{% endblock %}
